@@ -46,11 +46,3 @@ export function nextTriggerTime(cron) {
     method: 'get'
   })
 }
-
-export function getUsersList(params) {
-  return request({
-    url: 'api/user/list',
-    method: 'get',
-    params
-  })
-}

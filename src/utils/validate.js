@@ -85,21 +85,3 @@ export function isArray(arg) {
   }
   return Array.isArray(arg)
 }
-
-/**
- * 判断是否是json
- *
- * @param str
- * @returns {boolean}
- */
-export function isJSON(str) {
-  if (typeof str === 'string') {
-    try {
-      JSON.parse(str)
-      return true
-    } catch (e) {
-      return false
-    }
-  }
-  return false
-}

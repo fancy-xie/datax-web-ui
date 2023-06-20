@@ -8,6 +8,9 @@
         <el-step title="步骤 4" description="构建">4</el-step>
       </el-steps>
 
+      <el-button :disabled="active===1" style="margin-top: 12px;" @click="last">上一步</el-button>
+      <el-button style="margin-top: 12px;margin-bottom: 12px;" @click="next">下一步</el-button>
+
       <div v-show="active===1" class="step1">
         <Reader ref="reader" />
       </div>
@@ -18,9 +21,9 @@
         <Mapper ref="mapper" />
       </div>
       <div v-show="active===4" class="step4">
-        <el-button type="primary" @click="buildJson">1.构建</el-button>
-        <el-button type="primary" @click="handleJobTemplateSelectDrawer">{{ jobTemplate ? jobTemplate : "2.选择模板" }}</el-button>
-        <el-button type="info" @click="handleCopy(inputData,$event)">复制json</el-button>
+        <el-button type="primary" @click="buildJson">构建</el-button>
+        <el-button type="info" @click="handleCopy(inputData,$event)">复制 json</el-button>
+        <el-button type="primary" @click="handleJobTemplateSelectDrawer">{{ jobTemplate ? jobTemplate : "选择模板" }}</el-button>
         (步骤：构建->选择模板->下一步)
         <el-drawer
           ref="jobTemplateSelectDrawer"
@@ -45,14 +48,14 @@
             <el-table-column label="任务描述" align="center">
               <template slot-scope="scope">{{ scope.row.jobDesc }}</template>
             </el-table-column>
-            <el-table-column label="所属项目" align="center" width="120">
-              <template slot-scope="scope">{{ scope.row.projectName }}</template>
-            </el-table-column>
             <el-table-column label="Cron" align="center">
               <template slot-scope="scope"><span>{{ scope.row.jobCron }}</span></template>
             </el-table-column>
             <el-table-column label="路由策略" align="center">
               <template slot-scope="scope"> {{ routeStrategies.find(t => t.value === scope.row.executorRouteStrategy).label }}</template>
+            </el-table-column>
+            <el-table-column label="负责人" align="center">
+              <template slot-scope="scope">{{ scope.row.author }}</template>
             </el-table-column>
           </el-table>
           <pagination v-show="total>0" :total="total" :page.sync="listQuery.current" :limit.sync="listQuery.size" @pagination="fetchData" />
@@ -60,9 +63,6 @@
         <div style="margin-bottom: 20px;" />
         <json-editor v-show="active===4" ref="jsonEditor" v-model="configJson" />
       </div>
-
-      <el-button :disabled="active===1" style="margin-top: 12px;" @click="last">上一步</el-button>
-      <el-button type="primary" style="margin-top: 12px;margin-bottom: 12px;" @click="next">下一步</el-button>
     </div>
   </div>
 </template>
@@ -79,7 +79,6 @@ import clip from '@/utils/clipboard'
 import Mapper from './mapper'
 
 export default {
-  name: 'JsonBuild',
   components: { Reader, Writer, Pagination, JsonEditor, Mapper },
   data() {
     return {
@@ -98,7 +97,7 @@ export default {
         triggerStatus: -1,
         jobDesc: '',
         executorHandler: '',
-        userId: 0
+        author: ''
       },
       blockStrategies: [
         { value: 'SERIAL_EXECUTION', label: '单机串行' },
@@ -131,7 +130,7 @@ export default {
         executorFailRetryCount: '',
         alarmEmail: '',
         executorTimeout: '',
-        userId: 0,
+        author: '',
         jobConfigId: '',
         executorHandler: 'executorJobHandler',
         glueType: 'BEAN',
@@ -195,8 +194,7 @@ export default {
         readerPath: readerData.path,
         readerDefaultFS: readerData.defaultFS,
         readerFileType: readerData.fileType,
-        readerFieldDelimiter: readerData.fieldDelimiter,
-        readerSkipHeader: readerData.skipHeader
+        readerFieldDelimiter: readerData.fieldDelimiter
       }
       const hiveWriter = {
         writerDefaultFS: writeData.defaultFS,
@@ -227,8 +225,7 @@ export default {
         querySql: readerData.querySql
       }
       const rdbmsWriter = {
-        preSql: writeData.preSql,
-        postSql: writeData.postSql
+        preSql: writeData.preSql
       }
       const obj = {
         readerDatasourceId: readerData.datasourceId,
