@@ -1,6 +1,13 @@
-# datax-vue-admin
+# datax-web-ui 个人小优化版
+### 基于2.1.2-release
 
-[后端项目github地址](https://github.com/WeiYe-Jing/datax-web)
+[后端项目github地址](https://github.com/fancy-xie/datax-web)
+
+原仓库地址：https://github.com/WeiYe-Jing/datax-web-ui
+
+原后端仓库地址：https://github.com/WeiYe-Jing/datax-web
+
+## 以下是原说明
 
 该项目由 [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin) 修改而来
 
@@ -12,10 +19,16 @@
 
 ## Build Setup
 
-运行 
+安装依赖
 
 ```
 npm install
+```
+
+运行 
+
+```
+npm run dev
 ```
 
 打包
