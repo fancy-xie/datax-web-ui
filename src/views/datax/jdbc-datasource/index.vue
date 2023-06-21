@@ -387,18 +387,19 @@ export default {
       }
     },
     handleDelete(row) {
-      console.log('删除')
-      const idList = []
-      idList.push(row.id)
-      // 拼成 idList=xx
-      // 多个比较麻烦，这里不处理
-      datasourceApi.deleted({ idList: row.id }).then(response => {
-        this.fetchData()
-        this.$notify({
-          title: 'Success',
-          message: 'Delete Successfully',
-          type: 'success',
-          duration: 2000
+      this.$confirm('确定删除吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        datasourceApi.deleted({ idList: row.id }).then(response => {
+          this.fetchData()
+          this.$notify({
+            title: 'Success',
+            message: 'Delete Successfully',
+            type: 'success',
+            duration: 2000
+          })
         })
       })
       // const index = this.list.indexOf(row)
