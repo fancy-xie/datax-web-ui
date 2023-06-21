@@ -93,6 +93,7 @@
 import * as user from '@/api/datax-user'
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import md5 from 'js-md5'
 
 export default {
   name: 'User',
@@ -168,6 +169,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.password = md5(this.temp.password)
           user.createUser(this.temp).then(() => {
             this.fetchData()
             this.dialogFormVisible = false
@@ -192,6 +194,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
+          this.temp.password = md5(this.temp.password)
           const tempData = Object.assign({}, this.temp)
           user.updateUser(tempData).then(() => {
             this.fetchData()
