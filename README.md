@@ -1,5 +1,5 @@
 # datax-web-ui 个人小优化版
-### 基于2.1.2-release
+### 基于2.1.2
 
 [后端项目github地址](https://github.com/fancy-xie/datax-web)
 

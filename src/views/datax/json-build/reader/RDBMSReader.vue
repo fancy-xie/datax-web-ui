@@ -11,8 +11,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-show="needSchema" label="Schema：" prop="tableSchema">
-        <el-select v-model="readerForm.tableSchema" allow-create default-first-option filterable style="width: 300px" @change="schemaChange">
+      <el-form-item v-show="dataSource==='postgresql' || dataSource==='oracle' ||dataSource==='sqlserver'" label="Schema：" prop="tableSchema">
+        <el-select v-model="readerForm.tableSchema" filterable style="width: 300px" @change="schemaChange">
           <el-option
             v-for="item in schemaList"
             :key="item"
@@ -76,7 +76,6 @@ export default {
       customType: '',
       customValue: '',
       dataSource: '',
-      needSchema:false,
       readerForm: {
         datasourceId: undefined,
         tableName: '',
@@ -97,13 +96,10 @@ export default {
   },
   watch: {
     'readerForm.datasourceId': function(oldVal, newVal) {
-      // 当需要选择schemas时，先选择schemas再加载表
-      if (this.dataSource === 'postgresql' || this.dataSource === 'oracle' || this.dataSource === 'sqlserver' || this.dataSource === 'db2') {
+      if (this.dataSource === 'postgresql' || this.dataSource === 'oracle' || this.dataSource === 'sqlserver') {
         this.getSchema()
-        this.needSchema = true
       } else {
         this.getTables('rdbmsReader')
-        this.needSchema = false
       }
     }
   },
@@ -117,13 +113,6 @@ export default {
       jdbcDsList(this.jdbcDsQuery).then(response => {
         const { records } = response
         this.rDsList = records
-        this.dataSource = this.rDsList[0].datasource
-        this.readerForm.datasourceId = this.rDsList[0].id;
-        if(this.dataSource === 'postgresql' || this.dataSource === 'oracle' || this.dataSource === 'sqlserver' || this.dataSource === 'db2'){
-           this.needSchema = true;
-        }else{
-          this.needSchema = false;
-        }
         this.loading = false
       })
     },
@@ -131,7 +120,7 @@ export default {
     getTables(type) {
       if (type === 'rdbmsReader') {
         let obj = {}
-        if (this.needSchema) {
+        if (this.dataSource === 'postgresql' || this.dataSource === 'oracle' || this.dataSource === 'sqlserver') {
           obj = {
             datasourceId: this.readerForm.datasourceId,
             tableSchema: this.readerForm.tableSchema
@@ -175,9 +164,6 @@ export default {
       })
       Bus.dataSourceId = e
       this.$emit('selectDataSource', this.dataSource)
-      // 切换数据源时，清空可用表列表,当需要选择schemas时，先选择schemas再加载表
-      this.readerForm.tableSchema = ''
-      this.rTbList = []
     },
     getTableColumns() {
       const obj = {
