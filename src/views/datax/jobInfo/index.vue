@@ -2,10 +2,10 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.jobDesc" placeholder="任务名称" style="width: 200px;" class="filter-item" />
-      <el-select v-model="projectIds" multiple placeholder="所属项目" class="filter-item">
+      <el-select v-model="projectIds" multiple clearable placeholder="所属项目" class="filter-item">
         <el-option v-for="item in jobProjectList" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.glueType" placeholder="任务类型" style="width: 200px" class="filter-item">
+      <el-select v-model="listQuery.glueType" clearable placeholder="任务类型" style="width: 200px" class="filter-item">
         <el-option v-for="item in glueTypes" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="fetchData">
@@ -94,15 +94,15 @@
         <template slot-scope="{row}">
           <!-- <el-dropdown type="primary" size="small"> -->
           <!-- 操作 -->
-          <el-dropdown trigger="click">
+          <el-button type="text" @click.native="handlerViewLog(row)">查询日志</el-button>
+          <el-button type="text" @click.native="handlerUpdate(row)">编辑</el-button>
+          <el-dropdown trigger="click" style="margin-left: 15px">
             <span class="el-dropdown-link">
-              操作<i class="el-icon-arrow-down el-icon--right" />
+              更多<i class="el-icon-arrow-down el-icon--right" />
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="handlerExecute(row)">执行一次</el-dropdown-item>
-              <el-dropdown-item @click.native="handlerViewLog(row)">查询日志</el-dropdown-item>
-              <el-dropdown-item divided @click.native="handlerUpdate(row)">编辑</el-dropdown-item>
-              <el-dropdown-item @click.native="handlerDelete(row)">删除</el-dropdown-item>
+              <el-dropdown-item divided @click.native="handlerDelete(row)">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -536,6 +536,7 @@ export default {
       if (this.projectIds) {
         this.listQuery.projectIds = this.projectIds.toString()
       }
+      this.listQuery.jobDesc = this.listQuery.jobDesc.trim()
 
       job.getList(this.listQuery).then(response => {
         const { content } = response
