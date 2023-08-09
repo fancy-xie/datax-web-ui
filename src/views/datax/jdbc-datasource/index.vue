@@ -77,7 +77,7 @@
       @pagination="fetchData"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="800px">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="800px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px">
         <el-form-item label="数据源" prop="datasource">
           <el-select
@@ -166,6 +166,40 @@
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
       </span>
     </el-dialog>
+    <el-dialog :title="'更新任务数据源'" :visible.sync="dialogUpdateJobVisible" :close-on-press-escape="false" :close-on-click-modal="false" width="800px">
+      <div>
+        当前使用数据源：{{ temp.datasourceName }}
+      </div>
+      <div style="margin-top: 20px">
+        <el-radio-group v-model="batchUpdateJobDatasourceType">
+          <el-radio :label="0">替换reader</el-radio>
+          <el-radio :label="1">替换writer</el-radio>
+        </el-radio-group>
+      </div>
+      <el-divider />
+      <div style="margin-top: 20px">
+        <el-radio-group v-model="batchUpdateJobDatasourceOptionType">
+          <el-radio :label="0">按项目选择</el-radio>
+          <el-radio :label="1">按任务选择</el-radio>
+        </el-radio-group>
+      </div>
+      <el-transfer
+        filterable
+        filter-placeholder="搜索"
+        :titles="['列表', '目标']"
+        v-model="batchUpdateJobDatasourceList"
+        :data="batchUpdateJobDatasourceOptionList"
+        style="margin-top: 20px">
+      </el-transfer>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogUpdateJobVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="handleBatchUpdateJobDatasource">
+          确认
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -174,6 +208,9 @@ import * as datasourceApi from '@/api/datax-jdbcDatasource'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
+import * as job from '@/api/datax-job-info'
+import * as jobProjectApi from '@/api/datax-job-project'
+import {batchUpdateJobDatasource} from "@/api/datax-job-info";
 
 export default {
   name: 'JdbcDatasource',
@@ -202,6 +239,7 @@ export default {
       dialogPluginVisible: false,
       pluginData: [],
       dialogFormVisible: false,
+      dialogUpdateJobVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
@@ -243,7 +281,18 @@ export default {
       ],
       jdbc: true,
       hbase: false,
-      mongodb: false
+      mongodb: false,
+      batchUpdateJobDatasourceType: 0, // 0-reader 1-writer
+      batchUpdateJobDatasourceOptionType: '', // 选项类别 0-项目 1-任务
+      batchUpdateJobDatasourceOptionList: [],
+      batchUpdateJobDatasourceList: [],
+      jobIdList: [],
+      jobProjectList: []
+    }
+  },
+  watch: {
+    batchUpdateJobDatasourceOptionType: function(label) {
+      this.batchUpdateJobDatasourceOptionList = label === 0 ? this.jobProjectList : this.jobIdList
     }
   },
   created() {
@@ -303,6 +352,8 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+      this.getJobIdList()
+      console.log(this.jobIdList)
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -365,6 +416,17 @@ export default {
               type: 'success',
               duration: 2000
             })
+            if (this.jdbc) {
+              this.$confirm('更新成功，是否同步更新任务数据源信息', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'success'
+              }).then(() => {
+                this.getJobIdList()
+                this.getJobProjectList()
+                this.dialogUpdateJobVisible = true
+              })
+            }
           })
         }
       })
@@ -417,6 +479,70 @@ export default {
     },
     changePass(value) {
       this.visible = !(value === 'show')
+    },
+    getJobIdList() {
+      job.getJobIdList().then(response => {
+        const { content } = response
+        this.jobIdList = []
+        content.forEach(item => {
+          this.jobIdList.push({
+            key: item.id,
+            label: item.jobDesc
+          })
+        })
+      })
+    },
+    getJobProjectList() {
+      jobProjectApi.getJobProjectList().then(response => {
+        this.jobProjectList = []
+        response.forEach(item => {
+          this.jobProjectList.push({
+            key: item.id,
+            label: item.name
+          })
+        })
+      })
+    },
+    handleBatchUpdateJobDatasource() {
+      let message = ''
+      if (this.temp.id === undefined) {
+        message = '数据源为空'
+      }
+      if (this.batchUpdateJobDatasourceType !== 0 && this.batchUpdateJobDatasourceType !== 1) {
+        message = '数据源content类型错误'
+      }
+      if (this.batchUpdateJobDatasourceOptionType !== 0 && this.batchUpdateJobDatasourceType !== 1) {
+        message = '更新列表类型错误'
+      }
+      if (this.batchUpdateJobDatasourceList === undefined || this.batchUpdateJobDatasourceList.length === 0) {
+        message = '更新列表错误或列表为空'
+      }
+      if (message !== '') {
+        this.$alert(message, '出错了', {
+          confirmButtonText: '确定'
+        })
+      } else {
+        job.batchUpdateJobDatasource({
+          datasourceId: this.temp.id,
+          batchUpdateJobDatasourceType: this.batchUpdateJobDatasourceType,
+          batchUpdateJobOptionType: this.batchUpdateJobDatasourceOptionType,
+          batchUpdateJobList: this.batchUpdateJobDatasourceList
+        }).then(() => {
+          this.dialogUpdateJobVisible = false
+          this.resetBatchUpdateJobDatasource()
+          this.$notify({
+            title: 'Success',
+            message: 'Update Successfully',
+            type: 'success',
+            duration: 2000
+          })
+        })
+      }
+    },
+    resetBatchUpdateJobDatasource() {
+      this.batchUpdateJobDatasourceType = 0
+      this.batchUpdateJobDatasourceOptionType = ''
+      this.batchUpdateJobDatasourceList = []
     }
   }
 }

@@ -94,11 +94,13 @@
         <template slot-scope="{row}">
           <!-- <el-dropdown type="primary" size="small"> -->
           <!-- 操作 -->
-          <el-button type="text" @click.native="handlerViewLog(row)">查询日志</el-button>
-          <el-button type="text" @click.native="handlerUpdate(row)">编辑</el-button>
-          <el-dropdown trigger="click" style="margin-left: 15px">
+          <el-button type="primary" size="mini" @click.native="handlerUpdate(row)">编辑</el-button>
+          <el-button size="mini" @click.native="handlerViewLog(row)">日志</el-button>
+          <el-dropdown trigger="click" style="margin-left: 10px">
             <span class="el-dropdown-link">
-              更多<i class="el-icon-arrow-down el-icon--right" />
+              <el-button size="mini">
+                更多<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="handlerExecute(row)">执行一次</el-dropdown-item>

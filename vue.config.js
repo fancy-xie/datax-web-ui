@@ -36,7 +36,7 @@ module.exports = {
     },
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      //代理 /dev-api/api 到 http://localhost:8066/api
+      // 代理 /dev-api/api 到 http://localhost:8066/api
       [process.env.VUE_APP_API]: {
         target: `http://localhost:${apiPort}/api`,
         changeOrigin: true,

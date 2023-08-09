@@ -99,3 +99,12 @@ export function batchAddJob(data) {
   })
 }
 
+// batchUpdateJobDatasource
+export function batchUpdateJobDatasource(data) {
+  return request({
+    url: '/api/job/batchUpdateDatasource',
+    method: 'post',
+    data
+  })
+}
+
