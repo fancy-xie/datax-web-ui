@@ -1,24 +1,34 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.jobId" placeholder="全部" style="width: 200px" />
-      <el-select v-model="listQuery.jobGroup" placeholder="执行器">
+      <el-input v-model="listQuery.jobId" placeholder="任务ID" class="filter-item" style="width: 200px" />
+      <el-select v-model="listQuery.jobGroup" placeholder="执行器" class="filter-item">
         <el-option v-for="item in executorList" :key="item.id" :label="item.title" :value="item.id" />
       </el-select>
-      <el-select v-model="listQuery.logStatus" placeholder="类型" style="width: 200px">
+      <el-select v-model="listQuery.logStatus" placeholder="类型" class="filter-item" style="width: 200px">
         <el-option v-for="item in logStatusList" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
+      <el-date-picker
+        v-model="listQuery.filterTime"
+        type="datetimerange"
+        range-separator="-"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        format="yyyy-MM-dd hh:mm:ss"
+        value-format="yyyy-MM-dd hh:mm:ss"
+        class="filter-item"
+      />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="fetchData">
         搜索
       </el-button>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
+        type="danger"
+        icon="el-icon-delete"
         @click="handlerDelete"
       >
-        清除
+        删除日志
       </el-button>
     </div>
     <el-table
@@ -49,7 +59,7 @@
             trigger="click"
           >
             <h5 v-html="scope.row.triggerMsg" />
-            <el-button slot="reference">查看</el-button>
+            <el-button slot="reference" size="small">查看</el-button>
           </el-popover>
         </template>
       </el-table-column>
@@ -67,14 +77,14 @@
             trigger="click"
           >
             <h5 v-html="scope.row.handleMsg" />
-            <el-button slot="reference">查看</el-button>
+            <el-button slot="reference" size="small">查看</el-button>
           </el-popover>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="300">
         <template slot-scope="{row}">
-          <el-button v-show="row.executorAddress" type="primary" @click="handleViewJobLog(row)">日志查看</el-button>
-          <el-button v-show="row.handleCode===0 && row.triggerCode===200" type="primary" @click="killRunningJob(row)">
+          <el-button v-show="row.executorAddress" type="primary" size="small" @click="handleViewJobLog(row)">日志查看</el-button>
+          <el-button v-show="row.handleCode===0 && row.triggerCode===200" type="primary" size="small" @click="killRunningJob(row)">
             终止任务
           </el-button>
         </template>
@@ -106,8 +116,8 @@
         </el-row>
         <el-row>
           <el-col :span="14" :offset="5">
-            <el-form-item label="执行器">
-              <el-select v-model="temp.deleteType" placeholder="请选择执行器" style="width: 230px">
+            <el-form-item label="条件">
+              <el-select v-model="temp.deleteType" placeholder="请选择条件" style="width: 230px">
                 <el-option v-for="item in deleteTypeList" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
@@ -173,7 +183,7 @@ export default {
         jobGroup: 0,
         jobId: '',
         logStatus: -1,
-        filterTime: ''
+        filterTime: []
       },
       dialogPluginVisible: false,
       pluginData: [],
@@ -207,7 +217,7 @@ export default {
         { value: 9, label: '清理所有日志数据' }
       ],
       logStatusList: [
-        { value: -1, label: '全部' },
+        { value: -1, label: '全部结果' },
         { value: 1, label: '成功' },
         { value: 2, label: '失败' },
         { value: 3, label: '进行中' }
@@ -236,6 +246,7 @@ export default {
     fetchData() {
       this.listLoading = true
       const param = Object.assign({}, this.listQuery)
+      param.filterTime = param.filterTime.join(' - ')
       const urlJobId = this.$route.query.jobId
       if (urlJobId > 0 && !param.jobId) {
         param.jobId = urlJobId
@@ -253,7 +264,7 @@ export default {
       job.getExecutorList().then(response => {
         const { content } = response
         this.executorList = content
-        const defaultParam = { id: 0, title: '全部' }
+        const defaultParam = { id: 0, title: '全部执行器' }
         this.executorList.unshift(defaultParam)
         this.listQuery.jobGroup = this.executorList[0].id
       })
