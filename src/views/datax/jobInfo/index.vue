@@ -34,7 +34,7 @@
       <el-table-column label="任务名称" align="center">
         <template slot-scope="scope">{{ scope.row.jobDesc }}</template>
       </el-table-column>
-      <el-table-column label="所属项目" align="center" width="120">
+      <el-table-column label="所属项目" align="center" width="130">
         <template slot-scope="scope">{{ scope.row.projectName }}</template>
       </el-table-column>
       <el-table-column label="Cron" align="center" width="120">
@@ -92,17 +92,16 @@
       </el-table-column>
       <el-table-column label="操作" align="center" fixed="right">
         <template slot-scope="{row}">
-          <!-- <el-dropdown type="primary" size="small"> -->
           <!-- 操作 -->
-          <el-button type="primary" size="mini" @click.native="handlerUpdate(row)">编辑</el-button>
-          <el-button size="mini" @click.native="handlerViewLog(row)">日志</el-button>
+          <el-button type="primary" size="small" @click.native="handlerUpdate(row)">编辑</el-button>
           <el-dropdown trigger="click" style="margin-left: 10px">
             <span class="el-dropdown-link">
-              <el-button size="mini">
+              <el-button size="small">
                 更多<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="handlerViewLog(row)">日志</el-dropdown-item>
               <el-dropdown-item @click.native="handlerExecute(row)">执行一次</el-dropdown-item>
               <el-dropdown-item divided @click.native="handlerDelete(row)">删除</el-dropdown-item>
             </el-dropdown-menu>
