@@ -14,8 +14,9 @@
         range-separator="-"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        format="yyyy-MM-dd hh:mm:ss"
-        value-format="yyyy-MM-dd hh:mm:ss"
+        format="yyyy-MM-dd HH:mm:ss"
+        value-format="yyyy-MM-dd HH:mm:ss"
+        :default-time="['00:00:00', '23:59:59']"
         class="filter-item"
       />
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="fetchData">
