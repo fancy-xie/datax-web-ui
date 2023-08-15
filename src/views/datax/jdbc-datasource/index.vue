@@ -58,7 +58,7 @@
       <el-table-column label="备注" width="150" align="center">
         <template slot-scope="scope">{{ scope.row.comments }}</template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="230" fixed="right" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             编辑
@@ -210,7 +210,6 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import * as job from '@/api/datax-job-info'
 import * as jobProjectApi from '@/api/datax-job-project'
-import {batchUpdateJobDatasource} from "@/api/datax-job-info";
 
 export default {
   name: 'JdbcDatasource',
