@@ -204,7 +204,8 @@ export default {
         { value: 500, label: '失败' },
         { value: 502, label: '失败(超时)' },
         { value: 200, label: '成功' },
-        { value: 0, label: '无' }
+        { value: 0, label: '无' },
+        { value: -1, label: '未知' }
       ],
       deleteTypeList: [
         { value: 1, label: '清理一个月之前日志数据' },
