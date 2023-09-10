@@ -30,6 +30,9 @@
       <!-- <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">{{ scope.$index }}</template>
       </el-table-column> -->
+      <el-table-column label="数据源ID" width="95" align="center">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
       <el-table-column label="数据源" width="200" align="center">
         <template slot-scope="scope">{{ scope.row.datasource }}</template>
       </el-table-column>

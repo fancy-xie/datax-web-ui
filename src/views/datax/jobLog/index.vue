@@ -248,7 +248,9 @@ export default {
     fetchData() {
       this.listLoading = true
       const param = Object.assign({}, this.listQuery)
-      param.filterTime = param.filterTime.join(' - ')
+      if (param.filterTime !== null) {
+        param.filterTime = param.filterTime.join(' - ')
+      }
       const urlJobId = this.$route.query.jobId
       if (urlJobId > 0 && !param.jobId) {
         param.jobId = urlJobId

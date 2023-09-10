@@ -16,6 +16,9 @@
       <el-table-column label="排序" width="50" align="center">
         <template slot-scope="scope">{{ scope.row.order }}</template>
       </el-table-column>
+      <el-table-column label="执行器ID" width="95" align="center">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
       <el-table-column label="名称" width="120" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">{{ scope.row.title }}</template>
       </el-table-column>

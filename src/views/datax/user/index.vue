@@ -29,6 +29,9 @@
       <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">{{ scope.$index+1 }}</template>
       </el-table-column>
+      <el-table-column align="center" label="用户ID" width="95">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
       <el-table-column label="用户名" align="center">
         <template slot-scope="scope">{{ scope.row.username }}</template>
       </el-table-column>

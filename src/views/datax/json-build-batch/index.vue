@@ -130,7 +130,7 @@ export default {
         userId: 0,
         jobConfigId: '',
         executorHandler: 'executorJobHandler',
-        glueType: 'BEAN',
+        glueType: 'DATAX',
         jobJson: '',
         executorParam: '',
         replaceParam: '',

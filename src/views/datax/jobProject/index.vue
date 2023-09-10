@@ -27,6 +27,9 @@
       <el-table-column align="center" label="序号" width="95">
         <template slot-scope="scope">{{ scope.$index+1 }}</template>
       </el-table-column>
+      <el-table-column align="center" label="项目ID" width="95">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
       <el-table-column label="项目名称" align="center">
         <template slot-scope="scope">{{ scope.row.name }}</template>
       </el-table-column>
